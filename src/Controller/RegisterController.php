@@ -11,7 +11,8 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 
 
 class RegisterController extends AbstractController
@@ -24,7 +25,7 @@ class RegisterController extends AbstractController
     }
 
     #[Route('/register', name: 'register')]
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher)
     {
         $form = $this->createFormBuilder()
             ->add('username', TextType::class, ['label' => 'Username'])
@@ -47,16 +48,17 @@ class RegisterController extends AbstractController
                 $user = new User();
                 $user->setUsername($data['username']);
                 $user->setPassword(
-                    $passwordEncoder->encodePassword(
+                    $passwordHasher->hashPassword(
                         $user,
                         $data['password']
                     )
                 );
-                dump($user);
-                die;
-                $user->setUsername;
+                //dump($user);
+                //die;
+                //$user->setUsername($data['username']);
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
+                return $this->redirect($this->generateUrl('app_login'));
             }
         return $this->render('register/index.html.twig', [
             'form' => $form->createView()
