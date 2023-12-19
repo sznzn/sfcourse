@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\PostRepository;
 use App\Form\PostType;
+use Symfony\Component\Mime\MimeTypes;
 
 class PostController extends AbstractController
 {
@@ -42,7 +43,26 @@ class PostController extends AbstractController
         $form->handleRequest($request);
         $form->getErrors();
         if ($form->isSubmitted() && $form->isValid()){
-            // dump($post);
+            $file = $request->files->get(key:'post')['attachement'];
+            // dump();
+            // die;
+            if($file){
+
+            
+                $mineTypes = new MimeTypes();
+                $fileExtension = $mineTypes->getExtensions($file->getMimeType())[0] ?? null;
+
+                if(!$fileExtension){
+                        throw new \Exception('File extension not allowed');
+                }
+                $fileName = md5(uniqid()).'.'.$fileExtension;
+                $file->move(
+                    $this->getParameter(name:'uploads_dir'),
+                    $fileName
+                );
+                $post->setImage($fileName);
+            }
+
         $this->entityManager->persist($post);
         $this->entityManager->flush();
             return $this->redirect($this->generateUrl('post'));

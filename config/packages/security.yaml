@@ -9,6 +9,8 @@ security:
             entity:
                 class: App\Entity\User
                 property: username
+    role_hierarchy:
+                ROLE_ADMIN: [ROLE_USER]
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -17,6 +19,7 @@ security:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\CustomAuthenticator
+        
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -33,11 +36,12 @@ security:
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
-
+            
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/post, roles: ROLE_USER }
+        - { path: ^/create, roles: ROLE_USER }
         #- { path: ^/, roles: ROLE_USER }
 
 when@test:

@@ -15,6 +15,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+# use Symfony\Component\Security\Http\SecurityEvents; //modified
+# use Symfony\Component\Security\Http\Event\LoginSuccessEvent; //modified
 
 class CustomAuthenticator extends AbstractLoginFormAuthenticator
 {
@@ -44,6 +46,9 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        # $event = new LoginSuccessEvent($token, $request); //modified
+        # $this->dispatcher->dispatch($event, SecurityEvents::AUTHENTICATION_SUCCESS); //modified
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
@@ -51,7 +56,8 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         // For example:
         // return new RedirectResponse($this->urlGenerator->generate('some_route'));
         return new RedirectResponse($this->urlGenerator->generate(name:'post'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        # throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        # throw new RedirectResponse($this->urlGenerator->generate(name:'custom'));
     }
 
     protected function getLoginUrl(Request $request): string

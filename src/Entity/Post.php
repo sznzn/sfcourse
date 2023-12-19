@@ -34,4 +34,33 @@ class Post
 
         return $this;
     }
+    #[ORM\Column(length: 100)]
+    private ?string $image = "";
+    
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+    
+    public function setImage(string $image): static
+    {
+        $this->image = $image;
+        
+        return $this;
+    }
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: "post")]
+    private $category = null;
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
 }
